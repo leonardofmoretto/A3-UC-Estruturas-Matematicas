@@ -25,7 +25,7 @@ body {
 .dark-theme th,
 .dark-theme td {
     color: #ffffff; /* Cor do texto da tabela no tema escuro */
-    border-color: #444444; /* Cor das bordas da tabela no tema escuro */
+    border-color: #ffffff; /* Cor das bordas da tabela no tema escuro */
 }
 
 .dark-theme th {

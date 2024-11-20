@@ -80,13 +80,15 @@ function updateChart() {
 
     // Criação do novo gráfico
     window.chartInstance = new Chart(ctx, {
-        type: "line", // Tipo de gráfico (linha)
+        type: "scatter", // Tipo de gráfico (linha)
         data: {
             labels: dataArray.map(item => item.x), // Valores de X como labels
             datasets: [{
                 label: "Gráfico de X vs Y",
                 data: dataArray.map(item => item.y), // Valores de Y
-                borderColor: "rgb(75, 192, 192)",
+                borderColor: "rgb(255, 0, 0)",
+                backgroundColor: "rgb(255, 0, 0)",
+                pointRadius: 5,
                 fill: false,
                 tension: 0.1
             }]
@@ -95,11 +97,18 @@ function updateChart() {
             responsive: true,
             scales: {
                 x: {
+                    beginAtZero: true,
                     type: 'linear', // Escala linear para o eixo X
-                    position: 'bottom'
+                    position: 'bottom',
+                    grid: {
+                        color: "rgb(0, 0, 200)", // Cor das linhas horizontais (X)
+                    }
                 },
                 y: {
-                    beginAtZero: true // Começar o eixo Y no zero
+                    beginAtZero: true, // Começar o eixo Y no zero
+                    grid: {
+                        color: "rgb(0, 0, 200)" // Cor das linhas horizontais (X)
+                    },
                 }
             }
         }
