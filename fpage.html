@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Cartesiano com Tema Escuro/Claro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Plano Cartesiano</h1>
+
+        <!-- Botão de alteração de tema -->
+        <button class="theme-toggle-button" onclick="toggleTheme()" id="theme-toggle">
+            <span id="theme-icon" class="icon">🌙</span>
+        </button>
+
+        <div class="table-container">
+            <h2>Tabela X Y</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>X</th>
+                        <th>Y</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Dados da tabela serão inseridos aqui -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="separator"></div>
+
+        <h3>Adicionar Dados</h3>
+        <label for="xInput">X:</label>
+        <input type="number" id="xInput" placeholder="Valor de X">
+        <label for="yInput">Y:</label>
+        <input type="number" id="yInput" placeholder="Valor de Y">
+        <button onclick="addRow()">Adicionar Linha</button>
+
+        <div class="separator"></div>
+
+        <h2>Gráfico</h2>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        // Array para armazenar os dados da tabela
+        let dataArray = [];
+
+        // Função para alternar entre tema claro e escuro
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            
+            // Alterna o ícone e o texto
+            const themeIcon = document.getElementById('theme-icon');
+            if (document.body.classList.contains('dark-theme')) {
+                themeIcon.textContent = '🌞';  // Sol para tema escuro
+            } else {
+                themeIcon.textContent = '🌙';  // Lua para tema claro
+            }
+        }
+
+        // Função para adicionar uma linha na tabela
+        function addRow() {
+            let xValue = document.getElementById("xInput").value;
+            let yValue = document.getElementById("yInput").value;
+
+            // Verifica se os valores estão preenchidos
+            if (xValue && yValue) {
+                // Adiciona os dados na array
+                dataArray.push({x: parseFloat(xValue), y: parseFloat(yValue)});
+                
+                // Atualiza a tabela
+                populateTable();
+                
+                // Atualiza o gráfico
+                updateChart();
+                
+                // Limpa os campos de entrada
+                document.getElementById("xInput").value = '';
+                document.getElementById("yInput").value = '';
+            } else {
+                alert("Por favor, preencha ambos os campos de X e Y.");
+            }
+        }
+
+        // Função para preencher a tabela com os dados da array
+        function populateTable() {
+            let tableBody = document.getElementById("table-body");
+            tableBody.innerHTML = ""; // Limpa a tabela antes de adicionar
+            dataArray.forEach((item, index) => {
+                let row = document.createElement("tr");
+
+                let cellX = document.createElement("td");
+                let cellY = document.createElement("td");
+                let cellAction = document.createElement("td");
+                let deleteButton = document.createElement("button");
+
+                cellX.textContent = item.x;
+                cellY.textContent = item.y;
+
+                // Botão para remover linha
+                deleteButton.textContent = "Remover";
+                deleteButton.onclick = () => {
+                    dataArray.splice(index, 1); // Remove o item da array
+                    populateTable(); // Atualiza a tabela
+                    updateChart(); // Atualiza o gráfico
+                };
+
+                cellAction.appendChild(deleteButton);
+                row.appendChild(cellX);
+                row.appendChild(cellY);
+                row.appendChild(cellAction);
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Função para criar o gráfico com base nos dados
+        function updateChart() {
+            let ctx = document.getElementById("myChart").getContext("2d");
+
+            // Se o gráfico já existir, destruímos ele antes de criar um novo
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+
+            // Criação do novo gráfico
+            window.chartInstance = new Chart(ctx, {
+                type: "line", // Tipo de gráfico (linha)
+                data: {
+                    labels: dataArray.map(item => item.x), // Valores de X como labels
+                    datasets: [{
+                        label: "Gráfico de X vs Y",
+                        data: dataArray.map(item => item.y), // Valores de Y
+                        borderColor: "rgb(75, 192, 192)",
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear', // Escala linear para o eixo X
+                            position: 'bottom'
+                        },
+                        y: {
+                            beginAtZero: true // Começar o eixo Y no zero
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
