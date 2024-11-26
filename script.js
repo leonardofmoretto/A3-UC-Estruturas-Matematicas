@@ -14,35 +14,57 @@ function toggleTheme() {
     }
 }
 
-// Função para adicionar uma linha na tabela
-function addRow() {
+// Função do plano cartesiano
+function paresOrdenados() {
+    //Lembrar de fazer uma verficação para nao permitir um conjunto vazio
     let xValue = document.getElementById("xInput").value;
     let yValue = document.getElementById("yInput").value;
-
-    // Verifica se os valores estão preenchidos
-    if (xValue && yValue) {
-        // Adiciona os dados na array
-        dataArray.push({x: parseFloat(xValue), y: parseFloat(yValue)});
+    console.log(xValue);
+ 
+    xArray = makeArray(xValue);
+    yArray = makeArray(yValue);
+    document.getElementById("testeDados").textContent = xArray;
+    document.getElementById("testeDados2").textContent = yArray;
         
+    console.log(xArray);
+    console.log(yArray);
+
+    function makeArray(value){
+        let numArray = value.split(/[\s,]+/);// Regex para espaços e vírgulas
+        numArray = numArray.map(num => parseFloat(num));
+        return numArray;
+    }
+
+    let produtoCartesiano = [];
+    for (let i = 0; i < xArray.length; i++) {
+        for (let j = 0; j < yArray.length; j++) {
+            produtoCartesiano.push([xArray[i], yArray[j]]);
+        }
+    }
+    dataArray = produtoCartesiano;
+    console.log(dataArray);
+    dataArray.forEach((par) => {
+        console.log(`Par: (${par[0]}, ${par[1]})`);
+    });
+    
+    document.getElementById("testeDados3").textContent = produtoCartesiano;
         // Atualiza a tabela
         populateTable();
         
         // Atualiza o gráfico
         updateChart();
         
-        // Limpa os campos de entrada
-        document.getElementById("xInput").value = '';
-        document.getElementById("yInput").value = '';
-    } else {
-        alert("Por favor, preencha ambos os campos de X e Y.");
-    }
+        // Limpa os campos de entrada (ver se mantem ou tira essa parte)
+        //document.getElementById("xInput").value = '';
+        //document.getElementById("yInput").value = '';
+
 }
 
 // Função para preencher a tabela com os dados da array
 function populateTable() {
     let tableBody = document.getElementById("table-body");
     tableBody.innerHTML = ""; // Limpa a tabela antes de adicionar
-    dataArray.forEach((item, index) => {
+    dataArray.forEach((par) => {
         let row = document.createElement("tr");
 
         let cellX = document.createElement("td");
@@ -50,8 +72,8 @@ function populateTable() {
         let cellAction = document.createElement("td");
         let deleteButton = document.createElement("button");
 
-        cellX.textContent = item.x;
-        cellY.textContent = item.y;
+        cellX.textContent = par[0];
+        cellY.textContent = par[1];
 
         // Botão para remover linha
         deleteButton.textContent = "Remover";
@@ -82,10 +104,10 @@ function updateChart() {
     window.chartInstance = new Chart(ctx, {
         type: "scatter", // Tipo de gráfico (linha)
         data: {
-            labels: dataArray.map(item => item.x), // Valores de X como labels
+            labels: dataArray.map(item => item[0]), // Valores de X como labels
             datasets: [{
                 label: "Gráfico de X vs Y",
-                data: dataArray.map(item => item.y), // Valores de Y
+                data: dataArray.map(item => item[1]), // Valores de Y
                 borderColor: "rgb(255, 0, 0)",
                 backgroundColor: "rgb(255, 0, 0)",
                 pointRadius: 5,

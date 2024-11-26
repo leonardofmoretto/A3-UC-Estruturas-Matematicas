@@ -15,9 +15,22 @@
         <button class="theme-toggle-button" onclick="toggleTheme()" id="theme-toggle">
             <span id="theme-icon" class="icon">🌙</span>
         </button>
+        <h3>Adicionar Dados</h3>
+        <h5>por enquanto ele separa os dados com virgula ou espaço</h5>
+        <label for="xInput">X:</label>
+        <input type="text" id="xInput" placeholder="Valor de X">
+        <label for="yInput">Y:</label>
+        <input type="text" id="yInput" placeholder="Valor de Y">
+        <button onclick="paresOrdenados()">Montar pares</button>
+        <h3 id="testeDados">conjunto 1</h3>
+        <h3 id="testeDados2">conjunto 2</h3>
+        <h3 id="testeDados3">conjunto de pares</h3>
+
+        <div class="separator"></div>
 
         <div class="table-container">
             <h2>Tabela X Y</h2>
+            <h5>Ver como melhorar(acho que nao precisa desse botao remover, ou talvez encurtar essa coluna ação )</h5>
             <table>
                 <thead>
                     <tr>
@@ -31,15 +44,6 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="separator"></div>
-
-        <h3>Adicionar Dados</h3>
-        <label for="xInput">X:</label>
-        <input type="number" id="xInput" placeholder="Valor de X">
-        <label for="yInput">Y:</label>
-        <input type="number" id="yInput" placeholder="Valor de Y">
-        <button onclick="addRow()">Adicionar Linha</button>
 
         <div class="separator"></div>
 
