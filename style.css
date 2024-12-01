@@ -52,7 +52,7 @@ table, th, td {
 }
 
 th, td {
-    padding: 8px;
+    padding: 5px;
     text-align: center;
 }
 
@@ -66,15 +66,15 @@ th {
     margin: 20px 0;
 }
 
-input[type="number"] {
+input[type="text"] {
     width: 80px;
     padding: 5px;
     margin: 5px;
 }
 
 button {
-    padding: 5px 10px;
-    background-color: #4CAF50;
+    padding: 5px 5px;
+    background-color: #5367d4;
     color: white;
     border: none;
     cursor: pointer;
@@ -105,6 +105,7 @@ button:hover {
 
 .table-container {
     margin-top: 20px;
+    width: 100%;
 }
 
 canvas {
