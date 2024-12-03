@@ -1,7 +1,8 @@
 // Array para armazenar os dados da tabela
 let dataArray = [];
-let xMax, xMin, yMax, yMin;
-
+let array_A, array_B;
+let max_A, min_A, max_B, min_B;
+let maiorA, maiorB, maiorFinal;
 const pointColors = [
         '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFFF33',
         '#FF8C00', '#8A2BE2', '#A52A2A', '#5F9EA0', '#D2691E',
@@ -26,39 +27,52 @@ function toggleTheme() {
     }
 }
 
-
+function achaMaior(val1, val2){
+    valAbsoluto1 = Math.abs(val1);
+    valAbsoluto2 = Math.abs(val2);
+    if(valAbsoluto1 > valAbsoluto2)
+        return valAbsoluto1;
+    else return valAbsoluto2;
+}
 
 // Função do plano cartesiano
 function paresOrdenados() {
+    
     //Lembrar de fazer uma verficação para nao permitir um conjunto vazio
-    let xValue = document.getElementById("xInput").value;
-    let yValue = document.getElementById("yInput").value;
-    console.log(xValue);
+    let conjuntoA = document.getElementById("xInput").value;
+    let conjuntoB = document.getElementById("yInput").value;
+    console.log(conjuntoA);
  
-    xArray = makeArray(xValue);
-    xMax = Math.max(...xArray);
-    xMin = Math.min(...xArray);
-
-    yArray = makeArray(yValue);
-    yMax = Math.max(...yArray);
-    yMin = Math.min(...yArray);
-
-    document.getElementById("testeDados").textContent = xArray + "MAX " + xMax + " MIN " + xMin;
-    document.getElementById("testeDados2").textContent = yArray;
-        
-    console.log(xArray);
-    console.log(yArray);
-
     function makeArray(value){
         let numArray = value.split(/[\s,]+/);// Regex para espaços e vírgulas
         numArray = numArray.map(num => parseFloat(num));
         return numArray;
     }
+    
+    array_A = makeArray(conjuntoA);
+    max_A = Math.max(...array_A);
+    min_A = Math.min(...array_A);
+
+    array_B = makeArray(conjuntoB);
+    max_B = Math.max(...array_B);
+    min_B = Math.min(...array_B);
+
+    maiorA = achaMaior(max_A,min_A);
+    maiorB = achaMaior(max_B,min_B);
+    maiorFinal = achaMaior(maiorA,maiorB);
+    
+    document.getElementById("testeDados").textContent = array_A + "MAX " + max_A + " MIN " + min_A;
+    document.getElementById("testeDados2").textContent = array_B + "MAX " + max_B + " MIN " + min_B;
+        
+    console.log(array_A);
+    console.log(array_B);
+
+    
 
     let produtoCartesiano = [];
-    for (let i = 0; i < xArray.length; i++) {
-        for (let j = 0; j < yArray.length; j++) {
-            produtoCartesiano.push([xArray[i], yArray[j]]);
+    for (let i = 0; i < array_A.length; i++) {
+        for (let j = 0; j < array_B.length; j++) {
+            produtoCartesiano.push([array_A[i], array_B[j]]);
         }
     }
     dataArray = produtoCartesiano;
@@ -126,10 +140,9 @@ function updateChart() {
     window.chartInstance = new Chart(ctx, {
         type: "scatter", // Tipo de gráfico (linha)
         data: {
-            labels: dataArray.map(item => item[0]), // Valores de X como labels
             datasets: [{
-                label: "Gráfico de A x B",
-                data: dataArray.map(item => item[1]), // Valores de Y
+                label: "A x B",
+                data: dataArray.map(item => ({x: item[0], y: item[1]})), // Valores de Y
                 borderColor: pointColors,
                 backgroundColor: pointColors,
                 pointRadius: 7,
@@ -142,8 +155,8 @@ function updateChart() {
             responsive: true,
             scales: {
                 x: {
-                    min: xMin - 5,
-                    max: xMax + 5,
+                    min: -maiorFinal - 5,
+                    max: maiorFinal + 5,
                     ticks: {
                         beginAtZero: true,
                         stepSize: 1, // Ajusta o tamanho do passo
@@ -160,8 +173,8 @@ function updateChart() {
                     }
                 },
                 y: {
-                    min: yMin - 5,
-                    max: yMax + 5,
+                    min: -maiorFinal - 5,
+                    max: maiorFinal + 5,
                     ticks: {
                         beginAtZero: true,
                         stepSize: 1, // Ajusta o tamanho do passo
@@ -181,7 +194,29 @@ function updateChart() {
             plugins: {
                 legend: {
                     display: true // Exibe a legenda
-                }
+                },
+                tooltip: {
+                    enabled: true,  // Habilita ou desabilita o tooltip
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',  // Cor de fundo da caixa do tooltip
+                    titleColor: '#FFFFFF',  // Cor do título do tooltip
+                    bodyColor: '#FFFFFF',  // Cor do corpo do tooltip (onde os dados do ponto são exibidos)
+                    borderColor: '#ff6347',  // Cor da borda da caixa de tooltip
+                    borderWidth: 2,  // Largura da borda
+                    padding: 10,  // Padding (espaçamento interno) da caixa de texto
+                    cornerRadius: 5,  // Arredondamento dos cantos da caixa
+                    boxWidth: 10,  // Tamanho da caixa que exibe o ponto (em pixels)
+                    titleFont: { // Fonte do título
+                        size: 14,
+                        weight: 'bold',
+                        family: 'Arial'
+                    },
+                    bodyFont: {  // Fonte do corpo
+                        size: 12,
+                        weight: 'normal',
+                        family: 'Arial'
+                    },
+                    displayColors: false,  // Desabilita a exibição da cor do ponto no tooltip
+                },
             }
         },
         // Depois de desenhar o gráfico, desenha as linhas pontilhadas
@@ -191,6 +226,23 @@ function updateChart() {
                 const dataset = chart.data.datasets[0];
                 const points = dataset.data;
                 
+                const xCenter = chart.scales.x.getPixelForValue(0);
+                const yCenter = chart.scales.y.getPixelForValue(0);
+
+                ctx.beginPath();
+                ctx.moveTo(35, yCenter);
+                ctx.lineTo(chart.width - 10, yCenter);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(xCenter, 30);
+                ctx.lineTo(xCenter, chart.height - 30);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+
                 points.forEach((point, index) => {
                     const color = dataset.backgroundColor[index];
         
@@ -202,14 +254,14 @@ function updateChart() {
         
                     // Linha horizontal do ponto até o eixo X
                     ctx.beginPath();
-                    ctx.moveTo(25, chart.scales['y'].getPixelForValue(point)); // Começa no eixo X
-                    ctx.lineTo(chart.scales['x'].getPixelForValue(dataArray[index][0]), chart.scales['y'].getPixelForValue(point));
+                    ctx.moveTo(chart.scales['x'].getPixelForValue(0), chart.scales['y'].getPixelForValue(point.y)); // Começa no eixo X
+                    ctx.lineTo(chart.scales['x'].getPixelForValue(point.x), chart.scales['y'].getPixelForValue(point.y));
                     ctx.stroke();
         
                     // Linha vertical do ponto até o eixo Y (corrigido)
                     ctx.beginPath();
-                    ctx.moveTo(chart.scales['x'].getPixelForValue(dataArray[index][0]), chart.scales['y'].getPixelForValue(yMin - 5)); // Começa no eixo Y (y = 0)
-                    ctx.lineTo(chart.scales['x'].getPixelForValue(dataArray[index][0]), chart.scales['y'].getPixelForValue(point)); // Vai até o ponto
+                    ctx.moveTo(chart.scales['x'].getPixelForValue(point.x), chart.scales['y'].getPixelForValue(0)); // Começa no eixo Y (y = 0)
+                    ctx.lineTo(chart.scales['x'].getPixelForValue(point.x), chart.scales['y'].getPixelForValue(point.y)); // Vai até o ponto
                     ctx.stroke();
         
                     ctx.restore();
