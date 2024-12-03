@@ -38,9 +38,15 @@ function achaMaior(val1, val2){
 // Função do plano cartesiano
 function paresOrdenados() {
     
-    //Lembrar de fazer uma verficação para nao permitir um conjunto vazio
     let conjuntoA = document.getElementById("xInput").value;
     let conjuntoB = document.getElementById("yInput").value;
+
+    // Verifica se ambos os campos estão preenchidos
+    if (!conjuntoA || !conjuntoB) {
+        alert("Por favor, preencha ambos os campos de entrada!");
+        return;
+    }
+
     console.log(conjuntoA);
  
     function makeArray(value){
@@ -60,9 +66,10 @@ function paresOrdenados() {
     maiorA = achaMaior(max_A,min_A);
     maiorB = achaMaior(max_B,min_B);
     maiorFinal = achaMaior(maiorA,maiorB);
-    
-    document.getElementById("testeDados").textContent = array_A + "MAX " + max_A + " MIN " + min_A;
-    document.getElementById("testeDados2").textContent = array_B + "MAX " + max_B + " MIN " + min_B;
+    console.log(`Max A: ${max_A} Min A: ${min_A}`);
+    console.log(`Max B: ${max_B} Min B: ${min_B}`);
+    document.getElementById("conjuntoA").textContent = `Conjunto A: {${array_A}}`;
+    document.getElementById("conjuntoB").textContent = `Conjunto B: {${array_B}}`;
         
     console.log(array_A);
     console.log(array_B);
@@ -77,16 +84,18 @@ function paresOrdenados() {
     }
     dataArray = produtoCartesiano;
     console.log(dataArray);
+    let pc = "";
     dataArray.forEach((par) => {
         console.log(`Par: (${par[0]}, ${par[1]})`);
+        pc += `(${par[0]}, ${par[1]}), `;
     });
     
-    document.getElementById("testeDados3").textContent = produtoCartesiano;
+    document.getElementById("produtoCartesiano").textContent = "Produto Cartesiano: { " + pc + "}";
         // Atualiza a tabela
-        populateTable();
+        preencherTabela();
         
         // Atualiza o gráfico
-        updateChart();
+        atualizaGrafico();
         
         // Limpa os campos de entrada (ver se mantem ou tira essa parte)
         //document.getElementById("xInput").value = '';
@@ -95,12 +104,11 @@ function paresOrdenados() {
 }
 
 // Função para preencher a tabela com os dados da array
-function populateTable() {
+function preencherTabela() {
     let tableBody = document.getElementById("table-body");
     tableBody.innerHTML = ""; // Limpa a tabela antes de adicionar
     dataArray.forEach((par, index) => {
-        let row = document.createElement("tr");
-
+        let linha = document.createElement("tr");
         let cellX = document.createElement("td");
         let cellY = document.createElement("td");
         let cellAction = document.createElement("td");
@@ -114,22 +122,22 @@ function populateTable() {
         deleteButton.onclick = () => {
             console.log("PLAU");
             dataArray.splice(index, 1); // Remove o item da array
-            populateTable(); // Atualiza a tabela
-            updateChart(); // Atualiza o gráfico
+            preencherTabela(); // Atualiza a tabela
+            atualizaGrafico(); // Atualiza o gráfico
         };
 
         cellAction.appendChild(deleteButton);
-        row.appendChild(cellX);
-        row.appendChild(cellY);
-        row.appendChild(cellAction);
-        tableBody.appendChild(row);
+        linha.appendChild(cellX);
+        linha.appendChild(cellY);
+        linha.appendChild(cellAction);
+        tableBody.appendChild(linha);
     });
 }
 
 
 // Função para criar o gráfico com base nos dados
-function updateChart() {
-    let ctx = document.getElementById("myChart").getContext("2d");
+function atualizaGrafico() {
+    let ctx = document.getElementById("grafico").getContext("2d");
 
     // Se o gráfico já existir, destruímos ele antes de criar um novo
     if (window.chartInstance) {
@@ -138,11 +146,11 @@ function updateChart() {
 
     // Criação do novo gráfico
     window.chartInstance = new Chart(ctx, {
-        type: "scatter", // Tipo de gráfico (linha)
+        type: "scatter", // Tipo de gráfico (scatter) para fazer só os pontos
         data: {
             datasets: [{
                 label: "A x B",
-                data: dataArray.map(item => ({x: item[0], y: item[1]})), // Valores de Y
+                data: dataArray.map(item => ({x: item[0], y: item[1]})), // Valores de X e Y
                 borderColor: pointColors,
                 backgroundColor: pointColors,
                 pointRadius: 7,
@@ -159,11 +167,11 @@ function updateChart() {
                     max: maiorFinal + 5,
                     ticks: {
                         beginAtZero: true,
-                        stepSize: 1, // Ajusta o tamanho do passo
+                        stepSize: 1, // Ajusta quantos numero por vez ele pula no grafico
                         font: {
-                            size: 14,  // Tamanho da fonte dos números no eixo Y
-                            weight: 'bold', // Opção para aumentar a espessura da fonte
-                            family: 'Arial', // Fonte utilizada (opcional)
+                            size: 14,  
+                            weight: 'bold',
+                            family: 'Arial', 
                         },
                     },
                     grid: {
@@ -177,11 +185,11 @@ function updateChart() {
                     max: maiorFinal + 5,
                     ticks: {
                         beginAtZero: true,
-                        stepSize: 1, // Ajusta o tamanho do passo
+                        stepSize: 1, 
                         font: {
-                            size: 14,  // Tamanho da fonte dos números no eixo Y
-                            weight: 'bold', // Opção para aumentar a espessura da fonte
-                            family: 'Arial', // Fonte utilizada (opcional)
+                            size: 14,  
+                            weight: 'bold', 
+                            family: 'Arial',
                         },
                     },
                     grid: {
@@ -194,32 +202,10 @@ function updateChart() {
             plugins: {
                 legend: {
                     display: true // Exibe a legenda
-                },
-                tooltip: {
-                    enabled: true,  // Habilita ou desabilita o tooltip
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',  // Cor de fundo da caixa do tooltip
-                    titleColor: '#FFFFFF',  // Cor do título do tooltip
-                    bodyColor: '#FFFFFF',  // Cor do corpo do tooltip (onde os dados do ponto são exibidos)
-                    borderColor: '#ff6347',  // Cor da borda da caixa de tooltip
-                    borderWidth: 2,  // Largura da borda
-                    padding: 10,  // Padding (espaçamento interno) da caixa de texto
-                    cornerRadius: 5,  // Arredondamento dos cantos da caixa
-                    boxWidth: 10,  // Tamanho da caixa que exibe o ponto (em pixels)
-                    titleFont: { // Fonte do título
-                        size: 14,
-                        weight: 'bold',
-                        family: 'Arial'
-                    },
-                    bodyFont: {  // Fonte do corpo
-                        size: 12,
-                        weight: 'normal',
-                        family: 'Arial'
-                    },
-                    displayColors: false,  // Desabilita a exibição da cor do ponto no tooltip
-                },
+                },               
             }
         },
-        // Depois de desenhar o gráfico, desenha as linhas pontilhadas
+        // Cruz Central
         plugins: [{
             beforeDraw: function (chart) {
                 const ctx = chart.ctx;
@@ -243,10 +229,10 @@ function updateChart() {
                 ctx.strokeStyle = 'black';
                 ctx.stroke();
 
+                //Linhas pontilhadas
                 points.forEach((point, index) => {
                     const color = dataset.backgroundColor[index];
         
-                    // Desenhando as linhas pontilhadas
                     ctx.save();
                     ctx.strokeStyle = color; // Cor do ponto
                     ctx.setLineDash([5, 5]); // Define o estilo de linha pontilhada
@@ -254,14 +240,14 @@ function updateChart() {
         
                     // Linha horizontal do ponto até o eixo X
                     ctx.beginPath();
-                    ctx.moveTo(chart.scales['x'].getPixelForValue(0), chart.scales['y'].getPixelForValue(point.y)); // Começa no eixo X
-                    ctx.lineTo(chart.scales['x'].getPixelForValue(point.x), chart.scales['y'].getPixelForValue(point.y));
+                    ctx.moveTo(chart.scales.x.getPixelForValue(0), chart.scales.y.getPixelForValue(point.y)); // Começa no eixo X
+                    ctx.lineTo(chart.scales.x.getPixelForValue(point.x), chart.scales.y.getPixelForValue(point.y));
                     ctx.stroke();
         
-                    // Linha vertical do ponto até o eixo Y (corrigido)
+                    // Linha vertical do ponto até o eixo Y
                     ctx.beginPath();
-                    ctx.moveTo(chart.scales['x'].getPixelForValue(point.x), chart.scales['y'].getPixelForValue(0)); // Começa no eixo Y (y = 0)
-                    ctx.lineTo(chart.scales['x'].getPixelForValue(point.x), chart.scales['y'].getPixelForValue(point.y)); // Vai até o ponto
+                    ctx.moveTo(chart.scales.x.getPixelForValue(point.x), chart.scales.y.getPixelForValue(0)); // Começa no eixo Y (y = 0)
+                    ctx.lineTo(chart.scales.x.getPixelForValue(point.x), chart.scales.y.getPixelForValue(point.y)); // Vai até o ponto
                     ctx.stroke();
         
                     ctx.restore();
